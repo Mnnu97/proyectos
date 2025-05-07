@@ -17,7 +17,7 @@ def signup(request):
             # Mensaje de éxito al registrar
             messages.success(
                 request,
-                f'¡Bienvenido, {user.username}! Te has registrado exitosamente.'
+                f'¡Bienvenidoooo, {user.username}! Te has registrado exitosamente.'
             )
             return redirect('home')
         else:
