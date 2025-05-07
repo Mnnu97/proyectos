@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ proyecto.nombre }} - Detalle{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ proyecto.nombre }}</h2>
+
+    <!-- Acordeón con información adicional -->
+    <button class="btn btn-outline-primary mb-3 mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#infoProyectoAcordeon" aria-expanded="false" aria-controls="infoProyectoAcordeon">
+        Mostrar detalles del Proyecto
+    </button>
+
+    <div class="collapse" id="infoProyectoAcordeon">
+        <div class="accordion" id="acordeonProyecto">
+            
+            <!-- Descripción del proyecto -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-descripcion">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-descripcion" aria-expanded="false" aria-controls="collapse-descripcion">
+                        Descripción del Proyecto
+                    </button>
+                </h2>
+                <div id="collapse-descripcion" class="accordion-collapse collapse" aria-labelledby="heading-descripcion" data-bs-parent="#acordeonProyecto">
+                    <div class="accordion-body">
+                        {% if proyecto.descripcion %}
+                            <p>{{ proyecto.descripcion }}</p>
+                        {% else %}
+                            <p class="text-muted">Este proyecto no tiene una descripción asignada.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información general del proyecto -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-detalles">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-detalles" aria-expanded="false" aria-controls="collapse-detalles">
+                        Información General
+                    </button>
+                </h2>
+                <div id="collapse-detalles" class="accordion-collapse collapse" aria-labelledby="heading-detalles" data-bs-parent="#acordeonProyecto">
+                    <div class="accordion-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Fecha inicio:</strong> {{ proyecto.fecha_inicio|date:"d/m/Y" }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Fecha fin:</strong> {{ proyecto.fecha_fin|date:"d/m/Y"|default:"-" }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Estado:</strong>
+                                {% if proyecto.estado == 'pdte' %}
+                                    <span class="badge bg-danger">Pendiente</span>
+                                {% elif proyecto.estado == 'en_progreso' %}
+                                    <span class="badge bg-warning text-dark">En progreso</span>
+                                {% else %}
+                                    <span class="badge bg-success">Completado</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="mt-4">
+        <a href="{% url 'proyectos:proyecto_list' %}" class="btn btn-outline-secondary me-2">Volver al listado</a>
+        <a href="{% url 'proyectos:proyecto_update' proyecto.id %}" class="btn btn-outline-primary me-2">Editar Proyecto</a>
+        <a href="{% url 'proyectos:proyecto_delete' proyecto.id %}" class="btn btn-outline-danger">Eliminar Proyecto</a>
+    </div>
+</div>
+{% endblock %}

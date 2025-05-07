@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ proyecto.nombre }}{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm bg-white rounded">
+    <div class="card-body">
+        <h2 class="card-title">{{ proyecto.nombre }}</h2>
+        <p><strong>Descripción:</strong> {{ proyecto.descripcion }}</p>
+        <p><strong>Fecha inicio:</strong> {{ proyecto.fecha_inicio|date:"d/m/Y" }}</p>
+        <p><strong>Fecha fin:</strong> {{ proyecto.fecha_fin|date:"d/m/Y" }}</p>
+
+        <!-- Estado del Proyecto -->
+        <div class="mb-3">
+            <strong>Estado:</strong>
+            <div class="btn-group ms-2">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ proyecto.get_estado_display }}
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'proyectos:actualizar_estado_proyecto' proyecto.id %}?estado=pdte">Pendiente</a></li>
+                    <li><a class="dropdown-item" href="{% url 'proyectos:actualizar_estado_proyecto' proyecto.id %}?estado=en_progreso">En progreso</a></li>
+                    <li><a class="dropdown-item" href="{% url 'proyectos:actualizar_estado_proyecto' proyecto.id %}?estado=completado">Completado</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Listado de tareas -->
+        <h4 class="mt-4">Tareas del Proyecto</h4>
+        {% if proyecto.tareas.all %}
+        <ul class="list-group list-group-flush mt-3">
+            {% for tarea in proyecto.tareas.all %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>
+                    <a href="{% url 'proyectos:tarea_detail' tarea.pk %}" class="text-decoration-none fw-bold">
+                        {{ tarea.titulo }}
+                    </a>
+                </span>
+                <span>
+                    <span class="badge text-bg-{{ tarea.estado_completado|yesno:'danger,success' }} me-2">
+                        {{ tarea.get_estado_completado_display }}
+                    </span>
+                    <a href="{% url 'proyectos:tarea_update' tarea.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
+                    <a href="{% url 'proyectos:tarea_delete' tarea.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                </span>
+            </li>
+            {% empty %}
+            <p class="text-muted mt-3">No hay tareas aún.</p>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <hr class="my-4">
+        <a href="{% url 'proyectos:proyecto_list' %}" class="btn btn-outline-primary">Volver al listado</a>
+    </div>
+</div>
+{% endblock %}

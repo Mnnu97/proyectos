@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Listado de Proyectos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Listado de Proyectos</h2>
+
+    {% if proyectos %}
+        <ul class="list-group">
+            {% for proyecto in proyectos %}
+                <li class="list-group-item">
+                    <a href="{% url 'proyectos:proyecto_detail' proyecto.pk %}" class="text-decoration-none">
+                        {{ proyecto.nombre }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">No hay proyectos registrados aún.</p>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{% url 'proyectos:proyecto_create' %}" class="btn btn-primary">Crear nuevo proyecto</a>
+    </div>
+</div>
+{% endblock %}

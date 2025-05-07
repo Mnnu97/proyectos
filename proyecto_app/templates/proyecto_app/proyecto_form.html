@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if form.instance.pk %}
+        Editar Proyecto
+    {% else %}
+        Nuevo Proyecto
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>
+        {% if form.instance.pk %}
+            Editar Proyecto: {{ form.instance.nombre }}
+        {% else %}
+            Nuevo Proyecto
+        {% endif %}
+    </h2>
+
+    <form method="post" class="mt-3">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <div class="mb-3">
+                {{ field.label_tag }}
+
+                {% if field.field.required %}
+                    <span class="text-danger">*</span>
+                {% endif %}
+
+                {{ field }}
+
+                {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+
+                {% if field.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ field.errors.as_text|cut:"* " }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary">
+            {% if form.instance.pk %}
+                Actualizar Proyecto
+            {% else %}
+                Crear Proyecto
+            {% endif %}
+        </button>
+
+        <a href="{% url 'proyectos:proyecto_list' %}" class="btn btn-outline-secondary ms-2">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

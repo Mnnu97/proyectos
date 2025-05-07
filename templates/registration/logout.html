@@ -1,0 +1,39 @@
+<!-- templates/registration/logout.html -->
+
+{% extends "base.html" %}
+{% block title %}Sesión cerrada{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h1 class="display-4 fade-in">👋 ¡Gracias por tu tiempo y participacion en esta sesión!</h1>
+    <p class="lead mb-4">Tu sesión ha sido cerrada correctamente.</p>
+
+    <!-- Mensaje opcional -->
+    <div class="alert alert-info d-inline-block animated-message" role="alert">
+        Gracias por usar nuestro sistema.
+    </div>
+
+    <!-- Redirección automática después de 3 segundos -->
+    <script>
+        setTimeout(() => {
+            window.location.href = "{% url 'home' %}";
+        }, 3000);
+    </script>
+
+    <style>
+        .fade-in {
+            animation: fadeInUp 1s ease-in-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animated-message {
+            font-size: 1.5em;
+            transition: all 0.3s ease;
+        }
+    </style>
+</div>
+{% endblock %}

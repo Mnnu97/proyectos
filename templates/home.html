@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bienvenido</title>
+</head>
+<body>
+    <h1>Bienvenido al Sistema de Gestión de Proyectos</h1>
+
+    {% if user.is_authenticated %}
+        <p>Hola, {{ user.username }}!</p>
+        <p><a href="{% url 'proyectos:proyecto_list' %}">Ver proyectos</a></p>
+        <p><a href="{% url 'proyectos:tarea_list' %}">Ver tareas</a></p>
+        <p><a href="{% url 'logout' %}">Cerrar sesión</a></p>
+    {% else %}
+        <p><a href="{% url 'login' %}">Iniciar sesión</a></p>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Listado de Proyectos{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm bg-white rounded mb-4">
+    <div class="card-body">
+        <h2 class="card-title">Listado de Proyectos</h2>
+
+        {% if object_list %}
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+
+            {% for proyecto in object_list %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{% url 'proyectos:proyecto_detail' proyecto.pk %}" class="text-decoration-none">
+                                {{ proyecto.nombre }}
+                            </a>
+                        </h5>
+                        <p class="card-text text-muted">
+                            {{ proyecto.descripcion|truncatewords:20 }}
+                        </p>
+                        <p><strong>Fechas:</strong> 
+                           {{ proyecto.fecha_inicio|date:"d/m/Y" }} - 
+                           {{ proyecto.fecha_fin|date:"d/m/Y" }}
+                        </p>
+
+                        <!-- Estado del proyecto -->
+                        <span class="badge rounded-pill bg-{{ proyecto.estado|default:'secondary' }}"
+                              style="background-color:
+                                  {% if proyecto.estado == 'pdte' %}#dc3545
+                                  {% elif proyecto.estado == 'en_progreso' %}#ffc107
+                                  {% elif proyecto.estado == 'completado' %}#28a745
+                                  {% else %}#6c757d
+                                  {% endif %};
+                              color: white; font-size: 0.9em;">
+                            {{ proyecto.get_estado_display }}
+                        </span>
+
+                        <!-- Acciones -->
+                        <div class="mt-3">
+                            <a href="{% url 'proyectos:proyecto_update' proyecto.pk %}" class="btn btn-warning btn-sm me-2">Editar</a>
+                            <a href="{% url 'proyectos:proyecto_delete' proyecto.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <p class="text-muted mt-3">No hay proyectos registrados aún.</p>
+        {% endif %}
+
+        <hr class="my-4">
+        <a href="{% url 'proyectos:proyecto_create' %}" class="btn btn-success">Crear nuevo proyecto</a>
+    </div>
+</div>
+{% endblock %}

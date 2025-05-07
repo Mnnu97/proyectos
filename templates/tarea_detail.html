@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ tarea.titulo }}{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm bg-white rounded">
+    <div class="card-body">
+
+        <h2 class="card-title">{{ tarea.titulo }}</h2>
+        <p><strong>Descripción:</strong> {{ tarea.descripcion }}</p>
+
+        <!-- Botón de estado -->
+        <div class="mb-3">
+            <strong>Estado:</strong>
+            <div class="btn-group ms-2">
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ tarea.get_estado_completado_display }}
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" 
+                           href="{% url 'proyectos:actualizar_estado_tarea' tarea.id %}?estado_completado=pdte">
+                            Pendiente
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" 
+                           href="{% url 'proyectos:actualizar_estado_tarea' tarea.id %}?estado_completado=completada">
+                            Completada
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Proyecto asociado -->
+        <p><strong>Proyecto:</strong> 
+            <a href="{% url 'proyectos:proyecto_detail' tarea.proyecto.pk %}">
+                {{ tarea.proyecto.nombre }}
+            </a>
+        </p>
+
+        <!-- Acciones -->
+        <div class="mt-4">
+            <a href="{% url 'proyectos:tarea_list' %}" class="btn btn-primary me-2">Volver al listado</a>
+            <a href="{% url 'proyectos:tarea_update' tarea.pk %}" class="btn btn-warning me-2">Editar</a>
+            <a href="{% url 'proyectos:tarea_delete' tarea.id %}" class="btn btn-danger">Eliminar</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

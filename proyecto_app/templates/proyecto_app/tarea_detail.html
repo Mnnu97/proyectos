@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}{{ tarea.titulo }} - Detalles{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ tarea.titulo }}</h2>
+
+    <!-- Botón para cambiar estado -->
+    <div class="mb-4 mt-3">
+        <div class="btn-group" role="group">
+            <a href="{% url 'proyectos:actualizar_estado_tarea' tarea.id %}?estado_completado=pdte"
+               class="btn btn-outline-danger me-2">
+                Marcar como Pendiente
+            </a>
+            <a href="{% url 'proyectos:actualizar_estado_tarea' tarea.id %}?estado_completado=completada"
+               class="btn btn-outline-success">
+                Marcar como Completada
+            </a>
+        </div>
+    </div>
+
+    <!-- Acordeón general incluyendo la tarea actual -->
+    <div class="mt-4">
+        <h3>Tareas del Proyecto "{{ tarea.proyecto.nombre }}"</h3>
+        <button class="btn btn-outline-primary mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#listaTareasAcordeon" aria-expanded="false" aria-controls="listaTareasAcordeon">
+            Mostrar/Ocultar Tareas
+        </button>
+
+        <div class="collapse" id="listaTareasAcordeon">
+            <div class="accordion" id="acordeonTareas">
+                
+                <!-- Tarea actual -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading-tarea-actual">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-tarea-actual" aria-expanded="false" aria-controls="collapse-tarea-actual">
+                            {{ tarea.titulo }}
+                        </button>
+                    </h2>
+                    <div id="collapse-tarea-actual" class="accordion-collapse collapse" aria-labelledby="heading-tarea-actual" data-bs-parent="#acordeonTareas">
+                        <div class="accordion-body">
+                            {% if tarea.descripcion %}
+                                <p>{{ tarea.descripcion }}</p>
+                            {% else %}
+                                <p class="text-muted">Sin descripción.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Otras tareas del proyecto -->
+                {% for otra_tarea in tarea.proyecto.tareas.all %}
+                    {% if otra_tarea.id != tarea.id %} {# Evitar duplicados #}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading-{{ otra_tarea.id }}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ otra_tarea.id }}" aria-expanded="false" aria-controls="collapse-{{ otra_tarea.id }}">
+                                    {{ otra_tarea.titulo }}
+                                </button>
+                            </h2>
+                            <div id="collapse-{{ otra_tarea.id }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ otra_tarea.id }}" data-bs-parent="#acordeonTareas">
+                                <div class="accordion-body">
+                                    {% if otra_tarea.descripcion %}
+                                        <p>{{ otra_tarea.descripcion }}</p>
+                                    {% else %}
+                                        <p class="text-muted">Sin descripción.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones principales -->
+    <div class="mt-3">
+        <a href="{% url 'proyectos:tarea_list' %}" class="btn btn-outline-secondary btn-sm me-2">Volver a Tareas</a>
+        <a href="{% url 'proyectos:tarea_update' tarea.pk %}" class="btn btn-outline-primary btn-sm me-2">Editar</a>
+        <a href="{% url 'proyectos:tarea_delete' tarea.pk %}" class="btn btn-outline-danger btn-sm me-2">Eliminar</a>
+    </div>
+</div>
+{% endblock %}
