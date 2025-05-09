@@ -1,0 +1,65 @@
+{% if is_paginated %}
+    <nav aria-label="Navegación de proyectos" class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            <!-- Botón: Primera -->
+            {% if page_obj.number == 1 %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">« Primera</a>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">« Primera</a>
+                </li>
+            {% endif %}
+
+            <!-- Botón: Anterior -->
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">⬅️ Anterior</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">⬅️ Anterior</a>
+                </li>
+            {% endif %}
+
+            <!-- Números de página cercanos -->
+            {% for num in paginator.page_range %}
+                {% if num == page_obj.number %}
+                    <li class="page-item active" aria-current="page">
+                        <a class="page-link" href="#">{{ num }}</a>
+                    </li>
+                {% elif num > page_obj.number|add:"-2" and num < page_obj.number|add:"3" %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Botón: Siguiente -->
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente ➡️</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">Siguiente ➡️</a>
+                </li>
+            {% endif %}
+
+            <!-- Botón: Última -->
+            {% if page_obj.number == paginator.num_pages %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">Última &raquo;</a>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ paginator.num_pages }}">Última &raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% else %}
+    <p class="text-center text-muted mt-3">Solo hay una página.</p>
+{% endif %}

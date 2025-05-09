@@ -1,24 +1,56 @@
 {% extends "base.html" %}
-
-{% block title %}Listado de Tareas{% endblock %}
+{% block title %}Tareas Agrupadas por Proyecto{% endblock %}
 
 {% block content %}
-<h2>Listado de Tareas</h2>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Tareas por Proyecto</h2>
+        <a href="{% url 'proyectos:tarea_create' %}" class="btn btn-success">Crear Nueva Tarea</a>
+    </div>
 
-<ul>
-    {% for tarea in tareas %}
-    <li>
-        <strong>{{ tarea.titulo }}</strong> (Proyecto: {{ tarea.proyecto.nombre }})
-        <br>
-        Estado: {{ tarea.estado_completado|yesno:"Completada,No completada" }}
-        <br>
-        <a href="{% url 'proyectos:tarea_detail' tarea.pk %}">Ver detalles</a>
-        
-    </li>
-    {% empty %}
-    <p>No hay tareas registradas.</p>
-    {% endfor %}
-</ul>
+    <!-- Botón: Volver a Proyectos -->
+    <div class="mb-4">
+        <a href="{% url 'proyectos:proyecto_list' %}" class="btn btn-outline-secondary">
+            ← Volver a la lista de Proyectos
+        </a>
+    </div>
 
-<a href="{% url 'proyectos:tarea_create' %}">Crear nueva tarea</a>
+    {% if tareas %}
+        <!-- Agrupar por proyecto -->
+        {% regroup tareas by proyecto as grupo_tareas %}
+
+        <!-- Mostrar cada proyecto con sus tareas -->
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for grupo in grupo_tareas %}
+                <div class="col">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">{{ grupo.grouper.nombre }}</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if grupo.list %}
+                                <ul class="list-group list-group-flush">
+                                    {% for tarea in grupo.list %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <a href="{% url 'proyectos:tarea_detail' tarea.id %}" class="text-decoration-none">
+                                                {{ tarea.titulo }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted mb-0">Sin tareas asignadas</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Paginación -->
+        {% include "proyecto_app/pagination.html" %}
+    {% else %}
+        <div class="alert alert-info mt-3">No hay tareas registradas aún.</div>
+    {% endif %}
+</div>
 {% endblock %}

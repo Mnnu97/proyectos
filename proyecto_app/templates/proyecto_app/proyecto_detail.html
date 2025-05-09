@@ -5,14 +5,14 @@
 <div class="container mt-4">
     <h2>{{ proyecto.nombre }}</h2>
 
-    <!-- Acordeón con información adicional -->
+    <!-- Acordeón con información del proyecto -->
     <button class="btn btn-outline-primary mb-3 mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#infoProyectoAcordeon" aria-expanded="false" aria-controls="infoProyectoAcordeon">
         Mostrar detalles del Proyecto
     </button>
 
     <div class="collapse" id="infoProyectoAcordeon">
         <div class="accordion" id="acordeonProyecto">
-            
+
             <!-- Descripción del proyecto -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading-descripcion">
@@ -63,6 +63,28 @@
             </div>
 
         </div>
+    </div>
+
+    <!-- Listado de tareas del proyecto -->
+    <div class="mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4>Tareas Asociadas</h4>
+            <a href="{% url 'proyectos:tarea_create' %}?proyecto={{ proyecto.id }}" class="btn btn-sm btn-success">Agregar Tarea</a>
+        </div>
+
+        {% if tareas and tareas|length > 0 %}
+            <ul class="list-group mt-2">
+                {% for tarea in tareas %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{% url 'proyectos:tarea_detail' tarea.id %}" class="text-decoration-none">
+                            {{ tarea.titulo }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted mt-3">No hay tareas registradas para este proyecto aún.</p>
+        {% endif %}
     </div>
 
     <!-- Botones de acción -->
