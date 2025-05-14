@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Asignar Proyectos - {{ usuario.username }}{% endblock %}
+
+{% block content %}
+<h1>Asignar Proyectos a {{ usuario.username }}</h1>
+
+<form method="post">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="proyectos" class="form-label">Selecciona los proyectos</label>
+    <select multiple class="form-control" id="proyectos" name="proyectos">
+      {% for proyecto in proyectos %}
+        <option value="{{ proyecto.id }}" {% if proyecto in proyectos_usuario %}selected{% endif %}>
+          {{ proyecto.nombre }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">Guardar Asignaciones</button>
+  <a href="{% url 'proyectos:lista_usuarios' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}

@@ -111,7 +111,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 from django.urls import reverse_lazy
 
 
-LOGIN_REDIRECT_URL = reverse_lazy('proyectos:proyecto_list')
+LOGIN_REDIRECT_URL = reverse_lazy('proyectos:inicio')
 
 
 LOGOUT_REDIRECT_URL = reverse_lazy('site-home')  

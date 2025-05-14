@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Detalles del Usuario - {{ usuario.username }}{% endblock %}
+
+{% block content %}
+<h1>Detalles del Usuario: {{ usuario.username }}</h1>
+
+{% if tareas_asignadas %}
+    <h3>Tareas Asignadas</h3>
+    <ul>
+        {% for tarea in tareas_asignadas %}
+            <li>
+                {{ tarea.titulo }} - {{ tarea.get_estado_completado_display }}
+                (Proyecto: {{ tarea.proyecto.nombre }})
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No tiene tareas asignadas.</p>
+{% endif %}
+
+<a href="{% url 'proyectos:lista_usuarios' %}" class="btn btn-secondary">Volver a Lista</a>
+
+{% endblock %}

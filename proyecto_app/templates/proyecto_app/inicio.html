@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load group_filters %}  {% load group_filters %}
+{% block title %}Inicio - Sistema de Gestión de Proyectos{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Sección de bienvenida -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">Bienvenido al Sistema de Gestión de Proyectos</h1>
+        <p class="lead text-muted mt-3">Administra tus proyectos y tareas desde un solo lugar. ¡Empieza ahora!</p>
+
+        <!-- Botón para ver proyectos (visible para todos) -->
+        <div class="mt-4 d-flex justify-content-center">
+            <a href="{% url 'proyectos:proyecto_list' %}" class="btn btn-primary btn-lg px-4 py-2 fs-5">
+                Ver Listado de Proyectos
+            </a>
+        </div>
+
+        <!-- Botón para Panel de Usuarios (solo visible para Admin) -->
+        {% if user|has_group:"Admin" %}
+            <div class="mt-3 d-flex justify-content-center">
+                <a href="{% url 'proyectos:lista_usuarios' %}" class="btn btn-success btn-lg px-4 py-2 fs-5">
+                    Panel de Administración
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Sección opcional: Características principales -->
+    <div class="row g-4 mt-5 justify-content-center">
+        <!-- Card 1: Organización -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 hover-card">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">Organización</h5>
+                    <p class="card-text text-muted">Mantén todos tus proyectos ordenados por estado y fecha.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Tareas Asociadas -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 hover-card">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">Tareas Asociadas</h5>
+                    <p class="card-text text-muted">Cada proyecto tiene sus propias tareas. Todo en un solo lugar.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Fácil de Usar -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 hover-card">
+                <div class="card-body">
+                    <h5 class="card-title text-success">Fácil de Usar</h5>
+                    <p class="card-text text-muted">Diseño intuitivo y navegación limpia para que te enfoques en lo importante.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Efecto hover opcional */
+    .hover-card:hover {
+        transform: translateY(-5px);
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}

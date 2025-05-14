@@ -1,11 +1,14 @@
+# proyecto_app/models.py
+
 from django.db import models
 from django.utils import timezone
-
+from django.contrib.auth.models import User  # Importamos User para la relación
 
 class Proyecto(models.Model):
     """
     Modelo que representa un Proyecto.
     Un proyecto puede contener múltiples tareas y su estado se actualiza automáticamente según ellas.
+    Ahora también tiene una lista de usuarios asignados.
     """
 
     ESTADOS = (
@@ -23,24 +26,22 @@ class Proyecto(models.Model):
         choices=ESTADOS,
         default='pdte'
     )
+    
+    # Campo ManyToMany para asignar usuarios al proyecto
+    usuarios = models.ManyToManyField(
+        User,
+        related_name='proyectos_usuario',
+        blank=True,
+        help_text="Usuarios asignados a este proyecto"
+    )
 
     def __str__(self):
         return self.nombre
 
     def get_estado_display(self):
-        """
-        Devuelve el valor legible del estado del proyecto.
-        Ejemplo: 'En progreso' en lugar de 'en_progreso'.
-        """
         return dict(Proyecto.ESTADOS).get(self.estado, "Desconocido")
 
     def actualizar_estado(self):
-        """
-        Actualiza automáticamente el estado del proyecto basándose en el estado de sus tareas.
-        - Pendiente: si no tiene tareas o todas están pendientes.
-        - En progreso: si hay una mezcla de completadas y pendientes.
-        - Completado: si todas las tareas están completadas.
-        """
         from .models import Tarea  
 
         total_tareas = self.tareas.count()
@@ -63,6 +64,7 @@ class Tarea(models.Model):
     """
     Modelo que representa una Tarea dentro de un Proyecto.
     Cada tarea tiene un estado que afecta al estado general del proyecto.
+    Ahora también tiene un campo para asignarla a un usuario.
     """
 
     ESTADOS_COMPLETADO = (
@@ -77,11 +79,23 @@ class Tarea(models.Model):
     )
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
+
+    # Nuevo campo: Asignación de usuario a la tarea
+    usuario = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='tareas_usuario',
+        help_text="Usuario responsable de esta tarea"
+    )
+
     estado_completado = models.CharField(
         max_length=20,
         choices=ESTADOS_COMPLETADO,
         default='pdte'
     )
+    
     fecha_creacion = models.DateField(auto_now_add=True)
     fecha_vencimiento = models.DateField(blank=True, null=True)
 
@@ -89,8 +103,4 @@ class Tarea(models.Model):
         return f"{self.titulo}"
 
     def get_estado_completado_display(self):
-        """
-        Devuelve el valor legible del estado de completado.
-        Ejemplo: 'Completada' en lugar de 'completada'.
-        """
         return dict(Tarea.ESTADOS_COMPLETADO).get(self.estado_completado, "Desconocido")

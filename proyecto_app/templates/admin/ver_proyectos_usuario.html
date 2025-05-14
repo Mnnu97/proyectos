@@ -1,0 +1,21 @@
+<!-- templates/admin/ver_proyectos_usuario.html -->
+
+{% extends "base.html" %}
+{% block title %}Proyectos de {{ usuario.username }}{% endblock %}
+
+{% block content %}
+<h1>Proyectos Asignados a {{ usuario.username }}</h1>
+
+{% if proyectos_asignados %}
+    <ul>
+        {% for proyecto in proyectos_asignados %}
+            <li>{{ proyecto.nombre }} - Estado: {{ proyecto.get_estado_display }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No tiene proyectos asignados.</p>
+{% endif %}
+
+<a href="{% url 'proyectos:lista_usuarios' %}" class="btn btn-secondary">Volver</a>
+
+{% endblock %}

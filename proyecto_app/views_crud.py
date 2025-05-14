@@ -55,7 +55,7 @@ class ProyectoCreateView(CreateView):
     model = Proyecto
     form_class = ProyectoForm
     template_name = 'proyecto_app/proyecto_form.html'
-    success_url = reverse_lazy('proyectos:proyecto_list')
+    success_url = reverse_lazy('proyectos:inicio')  # ← Ahora lleva a inicio
 
 
 @method_decorator(login_required, name='dispatch')
@@ -63,14 +63,14 @@ class ProyectoUpdateView(UpdateView):
     model = Proyecto
     form_class = ProyectoForm
     template_name = 'proyecto_app/proyecto_form.html'
-    success_url = reverse_lazy('proyectos:proyecto_list')
+    success_url = reverse_lazy('proyectos:inicio')  # ← Ahora lleva a inicio
 
 
 @method_decorator(login_required, name='dispatch')
 class ProyectoDeleteView(DeleteView):
     model = Proyecto
     template_name = 'proyecto_app/proyecto_confirm_delete.html'
-    success_url = reverse_lazy('proyectos:proyecto_list')
+    success_url = reverse_lazy('proyectos:inicio')  # ← Ahora lleva a inicio
 
 
 # ====================
@@ -95,7 +95,7 @@ class TareaDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['volver_a'] = reverse('proyectos:proyecto_list')  # ← Ahora vuelve a la lista
+        context['volver_a'] = reverse('proyectos:inicio')  # ← Ahora vuelve a inicio
         return context
 
 
@@ -113,7 +113,7 @@ class TareaCreateView(CreateView):
                 return reverse('proyectos:proyecto_detail', kwargs={'pk': proyecto.id})
             except Proyecto.DoesNotExist:
                 pass
-        return reverse_lazy('proyectos:proyecto_list')  # ← Ahora redirige a proyecto_list si no hay proyecto
+        return reverse_lazy('proyectos:inicio')  # ← Ahora siempre vuelve a inicio
 
 
 @method_decorator(login_required, name='dispatch')
@@ -123,7 +123,7 @@ class TareaUpdateView(UpdateView):
     template_name = 'proyecto_app/tarea_form.html'
 
     def get_success_url(self):
-        return reverse_lazy('proyectos:proyecto_list')  # ← Siempre vuelve a la lista
+        return reverse_lazy('proyectos:inicio')  # ← Siempre vuelve a inicio
 
 
 @method_decorator(login_required, name='dispatch')
@@ -132,4 +132,4 @@ class TareaDeleteView(DeleteView):
     template_name = 'proyecto_app/tarea_confirm_delete.html'
 
     def get_success_url(self):
-        return reverse_lazy('proyectos:proyecto_list')  # ← Ahora siempre vuelve a proyecto_list
+        return reverse_lazy('proyectos:inicio')  # ← Ahora siempre vuelve a inicio
