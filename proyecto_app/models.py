@@ -4,6 +4,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User  # Importamos User para la relación
 
+
 class Proyecto(models.Model):
     """
     Modelo que representa un Proyecto.
@@ -80,7 +81,7 @@ class Tarea(models.Model):
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
 
-    # Nuevo campo: Asignación de usuario a la tarea
+    # Campo para asignar la tarea a un usuario
     usuario = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
