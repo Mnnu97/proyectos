@@ -37,20 +37,27 @@ urlpatterns = [
     path('proyectos/<int:pk>/editar/', ProyectoUpdateView.as_view(), name='proyecto_update'),
     path('proyectos/<int:pk>/eliminar/', ProyectoDeleteView.as_view(), name='proyecto_delete'),
 
-    # 📝 Nuevas rutas para tareas por proyecto
+    # 📝 Nuevas rutas para tareas por proyecto (únicas y funcionales)
     path('proyectos/<int:proyecto_id>/tareas/crear/', TareaCreateView.as_view(), name='tarea_create_en_proyecto'),
+    
+    # ✅ Usa <int:pk> para vistas genéricas como DetailView, UpdateView, etc.
     path('proyectos/<int:proyecto_id>/tareas/<int:pk>/', TareaDetailView.as_view(), name='tarea_detail_en_proyecto'),
     path('proyectos/<int:proyecto_id>/tareas/<int:pk>/editar/', TareaUpdateView.as_view(), name='tarea_update_en_proyecto'),
     path('proyectos/<int:proyecto_id>/tareas/<int:pk>/eliminar/', TareaDeleteView.as_view(), name='tarea_delete_en_proyecto'),
-    path('proyectos/<int:proyecto_id>/tareas/estado/', actualizar_estado_tarea, name='actualizar_estado_tarea_en_proyecto'),
+    
+    # ✅ Cambia <int:pk> por <int:tarea_id> si tu vista espera ese nombre
+    path('proyectos/<int:proyecto_id>/tareas/<int:tarea_id>/estado/', 
+         actualizar_estado_tarea, 
+         name='actualizar_estado_tarea_en_proyecto'),
 
-    # 🔸 Rutas independientes para tareas (opcional)
-    path('tareas/', TareaListView.as_view(), name='tarea_list'),
-    path('tareas/<int:pk>/', TareaDetailView.as_view(), name='tarea_detail'),
-    path('tareas/crear/', TareaCreateView.as_view(), name='tarea_create'),
-    path('tareas/<int:pk>/editar/', TareaUpdateView.as_view(), name='tarea_update'),
-    path('tareas/<int:pk>/eliminar/', TareaDeleteView.as_view(), name='tarea_delete'),
-    path('tareas/<int:pk>/estado/', actualizar_estado_tarea, name='actualizar_estado_tarea'),
+    # ⚠️ Elimina estas rutas si no son usadas:
+    # Comentadas o eliminadas para evitar conflictos
+    # path('tareas/', TareaListView.as_view(), name='tarea_list'),  ← puede causar errores
+    # path('tareas/<int:pk>/', TareaDetailView.as_view(), name='tarea_detail'),
+    # path('tareas/crear/', TareaCreateView.as_view(), name='tarea_create'),
+    # path('tareas/<int:pk>/editar/', TareaUpdateView.as_view(), name='tarea_update'),
+    # path('tareas/<int:pk>/eliminar/', TareaDeleteView.as_view(), name='tarea_delete'),
+    # path('tareas/<int:pk>/estado/', actualizar_estado_tarea, name='actualizar_estado_tarea'),  ← esta era la que causaba el error
 
     # 🔁 Acciones de estado de proyectos
     path('proyectos/<int:pk>/estado/', actualizar_estado_proyecto, name='actualizar_estado_proyecto'),

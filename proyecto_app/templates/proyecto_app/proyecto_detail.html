@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load group_filters %}
 {% block title %}{{ proyecto.nombre }} - Detalle{% endblock %}
 
 {% block content %}
@@ -69,16 +70,29 @@
     <div class="mt-4">
         <div class="d-flex justify-content-between align-items-center">
             <h4>Tareas Asociadas</h4>
-            <a href="{% url 'proyectos:tarea_create' %}?proyecto={{ proyecto.id }}" class="btn btn-sm btn-success">Agregar Tarea</a>
+            {% if user|has_group:"Admin" or user in proyecto.usuarios.all %}
+                <a href="{% url 'proyectos:tarea_create_en_proyecto' proyecto_id=proyecto.id %}" class="btn btn-sm btn-success">
+                    Agregar Tarea
+                </a>
+            {% endif %}
         </div>
 
         {% if tareas and tareas|length > 0 %}
             <ul class="list-group mt-2">
                 {% for tarea in tareas %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <a href="{% url 'proyectos:tarea_detail' tarea.id %}" class="text-decoration-none">
+                        <!-- ✅ Cambiado a 'pk' -->
+                        <a href="{% url 'proyectos:tarea_detail_en_proyecto' proyecto_id=proyecto.id pk=tarea.id %}" class="text-decoration-none">
                             {{ tarea.titulo }}
                         </a>
+
+                        {% if user|has_group:"Admin" %}
+                            <!-- ✅ También usado aquí -->
+                            <a href="{% url 'proyectos:tarea_delete_en_proyecto' proyecto_id=proyecto.id pk=tarea.id %}" 
+                               class="btn btn-sm btn-danger">
+                                Eliminar
+                            </a>
+                        {% endif %}
                     </li>
                 {% endfor %}
             </ul>
@@ -89,7 +103,7 @@
 
     <!-- Botones de acción -->
     <div class="mt-4">
-        <a href="{% url 'proyectos:proyecto_list' %}" class="btn btn-outline-secondary me-2">Volver al listado</a>
+        <a href="{{ volver_a }}" class="btn btn-outline-secondary me-2">← Volver a Proyectos</a>
         <a href="{% url 'proyectos:proyecto_update' proyecto.id %}" class="btn btn-outline-primary me-2">Editar Proyecto</a>
         <a href="{% url 'proyectos:proyecto_delete' proyecto.id %}" class="btn btn-outline-danger">Eliminar Proyecto</a>
     </div>
