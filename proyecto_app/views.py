@@ -1,13 +1,16 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
+from django import forms
 
 from .models import Proyecto, Tarea
+
 
 # Función auxiliar para verificar si el usuario es Admin
 def es_admin(user):
     return user.groups.filter(name='Admin').exists()
+
 
 # =============================
 # Vistas de estado (ya existentes)
@@ -76,17 +79,55 @@ def PaginaInicioView(request):
 
 
 # =============================
-# Vista para crear usuarios (solo Admin)
+# Formulario para cambiar grupo desde la lista de usuarios
+# =============================
+class CambiarGrupoForm(forms.Form):
+    grupo = forms.ModelChoiceField(queryset=Group.objects.all(), empty_label=None)
+
+    def __init__(self, *args, **kwargs):
+        self.usuario = kwargs.pop('usuario', None)
+        super().__init__(*args, **kwargs)
+        if self.usuario:
+            grupo_actual = self.usuario.groups.first()
+            self.fields['grupo'].initial = grupo_actual
+
+
+# =============================
+# Vista para mostrar lista de usuarios (solo Admin)
 # =============================
 @user_passes_test(es_admin, login_url='/')
 def lista_usuarios(request):
-    """
-    Muestra la lista de todos los usuarios registrados.
-    """
-    usuarios = User.objects.all()
-    return render(request, 'admin/lista_usuarios.html', {'usuarios': usuarios})
+    usuarios = User.objects.all().prefetch_related('groups')
+    mensaje_exito = None
+
+    if request.method == 'POST':
+        usuario_id = request.POST.get('usuario_id')
+        usuario = get_object_or_404(User, id=usuario_id)
+        form = CambiarGrupoForm(request.POST, usuario=usuario)
+
+        if form.is_valid():
+            nuevo_grupo = form.cleaned_data['grupo']
+            usuario.groups.clear()
+            usuario.groups.add(nuevo_grupo)
+            mensaje_exito = f"Grupo del usuario '{usuario.username}' actualizado a '{nuevo_grupo.name}'."
+        else:
+            messages.error(request, 'Error al actualizar el grupo.')
+
+    else:
+        form = CambiarGrupoForm()
+
+    context = {
+        'usuarios': usuarios,
+        'mensaje_exito': mensaje_exito,
+        'form': form
+    }
+
+    return render(request, 'admin/lista_usuarios.html', context)
 
 
+# =============================
+# Vista para crear usuarios (solo Admin)
+# =============================
 @user_passes_test(es_admin, login_url='/')
 def crear_usuario(request):
     """
@@ -107,3 +148,41 @@ def crear_usuario(request):
             messages.error(request, 'Por favor, completa ambos campos.')
 
     return render(request, 'admin/crear_usuario.html')
+
+
+# =============================
+# Vista para eliminar usuario (solo Admin)
+# =============================
+@user_passes_test(es_admin, login_url='/')
+def eliminar_usuario(request, pk):
+    """
+    Elimina un usuario del sistema.
+    """
+    usuario = get_object_or_404(User, pk=pk)
+    nombre_usuario = usuario.username
+    usuario.delete()
+    messages.success(request, f'Usuario "{nombre_usuario}" eliminado exitosamente.')
+    return redirect('proyectos:lista_usuarios')
+
+
+# =============================
+# Vista del Panel de Administración (solo Admin)
+# =============================
+@user_passes_test(es_admin, login_url='/')
+def admin_panel_view(request):
+    """
+    Muestra el panel de administración solo para usuarios del grupo 'Admin'.
+    """
+    return render(request, 'admin/admin_panel.html')
+
+
+# =============================
+# Vista Temporal: Prueba de Usuario
+# =============================
+@login_required
+def test_user(request):
+    """
+    Vista temporal para verificar datos del usuario actual.
+    Útil para diagnóstico rápido.
+    """
+    return render(request, 'test_user.html')

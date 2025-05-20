@@ -1,17 +1,23 @@
 # proyecto_app/views_usuarios.py
 
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
+from django import forms
+from django.contrib.auth.hashers import make_password
 
 from .models import Proyecto
 
 
+# Función auxiliar para verificar si el usuario es Admin
 def es_admin(user):
     return user.groups.filter(name='Admin').exists()
 
 
+# =============================
+# Vista: Lista de Usuarios (ya existente)
+# =============================
 @user_passes_test(es_admin, login_url='/')
 def lista_usuarios(request):
     """
@@ -28,6 +34,9 @@ def lista_usuarios(request):
     return render(request, 'admin/lista_usuarios.html', {'usuarios': usuarios})
 
 
+# =============================
+# Vista: Crear Usuario (ya existente)
+# =============================
 @user_passes_test(es_admin, login_url='/')
 def crear_usuario(request):
     """
@@ -50,6 +59,9 @@ def crear_usuario(request):
     return render(request, 'admin/crear_usuario.html')
 
 
+# =============================
+# Vista: Eliminar Usuario (ya existente)
+# =============================
 @user_passes_test(es_admin, login_url='/')
 def eliminar_usuario(request, pk):
     """
@@ -70,6 +82,9 @@ def eliminar_usuario(request, pk):
     return render(request, 'admin/eliminar_usuario.html', {'usuario': usuario})
 
 
+# =============================
+# Vista: Asignar Proyectos (ya existente)
+# =============================
 @user_passes_test(es_admin, login_url='/')
 def asignar_proyectos(request, pk):
     """
@@ -97,6 +112,9 @@ def asignar_proyectos(request, pk):
     })
 
 
+# =============================
+# Vista: Ver Proyectos de Usuario (ya existente)
+# =============================
 @user_passes_test(es_admin, login_url='/')
 def ver_proyectos_usuario(request, pk):
     """
@@ -111,6 +129,9 @@ def ver_proyectos_usuario(request, pk):
     })
 
 
+# =============================
+# Vista: Detalle de Usuario (ya existente)
+# =============================
 @user_passes_test(es_admin, login_url='/')
 def detalle_usuario(request, pk):
     """
@@ -125,3 +146,68 @@ def detalle_usuario(request, pk):
     }
 
     return render(request, 'admin/detalle_usuario.html', context)
+
+
+# =============================
+# ✅ Vista: Editar Usuario (actualizada con edición de contraseña)
+# =============================
+@user_passes_test(es_admin, login_url='/')
+def editar_usuario(request, pk):
+    """
+    Permite al Admin editar datos básicos de un usuario y su contraseña (opcional).
+    """
+    usuario = get_object_or_404(User, pk=pk)
+
+    class EditarUsuarioForm(forms.ModelForm):
+        grupo = forms.ModelChoiceField(queryset=Group.objects.all(), required=True)
+        nueva_contrasena = forms.CharField(
+            widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+            required=False,
+            label="Nueva Contraseña"
+        )
+        confirmar_contrasena = forms.CharField(
+            widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+            required=False,
+            label="Confirmar Contraseña"
+        )
+
+        class Meta:
+            model = User
+            fields = ['username', 'email', 'grupo', 'nueva_contrasena', 'confirmar_contrasena']
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            if self.instance.pk:
+                self.fields['grupo'].initial = self.instance.groups.first()
+
+        def clean(self):
+            cleaned_data = super().clean()
+            nueva = cleaned_data.get("nueva_contrasena")
+            confirmar = cleaned_data.get("confirmar_contrasena")
+
+            if nueva or confirmar:
+                if nueva != confirmar:
+                    raise forms.ValidationError("Las contraseñas no coinciden.")
+            
+            return cleaned_data
+
+    if request.method == 'POST':
+        form = EditarUsuarioForm(request.POST, instance=usuario)
+        if form.is_valid():
+            usuario = form.save(commit=False)
+            nueva_contrasena = form.cleaned_data.get('nueva_contrasena')
+
+            if nueva_contrasena:
+                usuario.password = make_password(nueva_contrasena)
+
+            usuario.save()
+            grupo = form.cleaned_data['grupo']
+            usuario.groups.clear()
+            usuario.groups.add(grupo)
+
+            messages.success(request, f'Usuario "{usuario.username}" actualizado exitosamente.')
+            return redirect('proyectos:lista_usuarios')
+    else:
+        form = EditarUsuarioForm(instance=usuario)
+
+    return render(request, 'admin/editar_usuario.html', {'form': form})

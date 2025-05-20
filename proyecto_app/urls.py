@@ -1,5 +1,3 @@
-# proyecto_app/urls.py
-
 from django.urls import path
 
 # Vistas CRUD
@@ -22,7 +20,14 @@ from .views_auth import signup
 from .views_estado import actualizar_estado_tarea, actualizar_estado_proyecto
 
 # 👇 Vistas de gestión de usuarios (Admin)
-from .views_usuarios import lista_usuarios, crear_usuario, eliminar_usuario, asignar_proyectos, detalle_usuario, ver_proyectos_usuario
+from .views_usuarios import lista_usuarios, crear_usuario, eliminar_usuario, asignar_proyectos, detalle_usuario, ver_proyectos_usuario, editar_usuario
+
+# 👇 Importamos vistas adicionales
+from .views import admin_panel_view  # Vista del panel de administración
+
+# 👇 Importamos vistas de autenticación para cambio de contraseña
+from django.contrib.auth import views as auth_views
+
 
 app_name = 'proyectos'
 
@@ -69,6 +74,9 @@ urlpatterns = [
     path('usuarios/', lista_usuarios, name='lista_usuarios'),
     path('usuarios/crear/', crear_usuario, name='crear_usuario'),
     
+    # ✅ Editar usuario
+    path('usuarios/<int:pk>/editar/', editar_usuario, name='editar_usuario'),
+
     # ✅ Eliminar y Asignar Proyectos
     path('usuarios/<int:pk>/eliminar/', eliminar_usuario, name='eliminar_usuario'),
     path('usuarios/<int:pk>/asignar-proyectos/', asignar_proyectos, name='asignar_proyectos'),
@@ -76,4 +84,16 @@ urlpatterns = [
     
     # 👀 Ver Proyectos asignados al usuario
     path('usuarios/<int:pk>/proyectos/', ver_proyectos_usuario, name='ver_proyectos_usuario'),
+
+    # 👨‍💼 Panel de Administración (solo Admin)
+    path('admin-panel/', admin_panel_view, name='admin_panel'),
+
+    # 🔐 Gestión de Contraseña
+    path('cambiar-password/', auth_views.PasswordChangeView.as_view(
+        template_name='registration/password_change_form.html'
+    ), name='password_change'),
+
+    path('cambiar-password/hecho/', auth_views.PasswordChangeDoneView.as_view(
+        template_name='registration/password_change_done.html'
+    ), name='password_change_done'),
 ]

@@ -3,76 +3,92 @@
 {% block title %}Lista de Usuarios - ProyectosApp{% endblock %}
 
 {% block content %}
-<h1>Usuarios Registrados</h1>
+<div class="container mt-5">
+    <h2 class="mb-4">Usuarios Registrados</h2>
 
-<!-- Mostrar administradores -->
-<div>
-    <h3>Administradores</h3>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nombre de usuario</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for usuario in usuarios %}
-                {% if usuario|has_group:"Admin" %}
+    <!-- Mostrar administradores -->
+    <div class="mb-5">
+        <h4 class="mb-3 text-primary">Administradores</h4>
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nombre de usuario</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                    {% if usuario|has_group:"Admin" %}
+                        <tr>
+                            <td>{{ usuario.username }}</td>
+                            <td>{{ usuario.email }}</td>
+                            <td>
+                                <span class="text-muted">No hay acciones disponibles</span>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% empty %}
                     <tr>
-                        <td>{{ usuario.username }}</td>
-                        <td>
-                            <!-- No mostrar acciones para Admin -->
-                            <span class="text-muted">No hay acciones disponibles</span>
-                        </td>
+                        <td colspan="3" class="text-center">No hay administradores registrados.</td>
                     </tr>
-                {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-<!-- Mostrar usuarios comunes -->
-<div>
-    <h3>Usuarios Comunes</h3>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nombre de usuario</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for usuario in usuarios %}
-                {% if not usuario|has_group:"Admin" %}
+    <!-- Mostrar usuarios comunes -->
+    <div class="mb-5">
+        <h4 class="mb-3 text-success">Usuarios Comunes</h4>
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Nombre de usuario</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                    {% if not usuario|has_group:"Admin" %}
+                        <tr>
+                            <td>{{ usuario.username }}</td>
+                            <td>{{ usuario.email }}</td>
+                            <td>
+                                <!-- Botón Asignar Proyectos -->
+                                <a href="{% url 'proyectos:asignar_proyectos' usuario.id %}" class="btn btn-sm btn-warning me-2">
+                                    Asignar Proyectos
+                                </a>
+
+                                <!-- Botón Ver Proyectos -->
+                                <a href="{% url 'proyectos:ver_proyectos_usuario' usuario.id %}" class="btn btn-sm btn-info me-2">
+                                    Ver Proyectos
+                                </a>
+                                <!-- Botón Editar -->
+                                 <a href="{% url 'proyectos:editar_usuario' usuario.id %}" class="btn btn-sm btn-warning me-2">
+                                 Editar
+                                 </a> 
+                                <!-- Botón Eliminar -->
+                                <form action="{% url 'proyectos:eliminar_usuario' usuario.id %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% empty %}
                     <tr>
-                        <td>{{ usuario.username }}</td>
-                        <td>
-                            <!-- Botón Asignar Proyectos -->
-                            <a href="{% url 'proyectos:asignar_proyectos' usuario.id %}" class="btn btn-sm btn-warning me-2">
-                                Asignar Proyectos
-                            </a>
-
-                            <!-- Botón Ver Proyectos -->
-                            <a href="{% url 'proyectos:ver_proyectos_usuario' usuario.id %}" class="btn btn-sm btn-info me-2">
-                                Ver Proyectos
-                            </a>
-
-                            <!-- Botón Eliminar -->
-                            <form action="{% url 'proyectos:eliminar_usuario' usuario.id %}" method="post" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                            </form>
-                        </td>
+                        <td colspan="3" class="text-center">No hay usuarios comunes registrados.</td>
                     </tr>
-                {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="mt-4">
+        <a href="{% url 'proyectos:crear_usuario' %}" class="btn btn-success me-2">Crear Nuevo Usuario</a>
+        <a href="{% url 'proyectos:admin_panel' %}" class="btn btn-outline-secondary">Volver al Panel</a>
+    </div>
 </div>
-
-<!-- Botón Crear Nuevo Usuario -->
-<a href="{% url 'proyectos:crear_usuario' %}" class="btn btn-primary">Crear Nuevo Usuario</a>
-<br><br>
-<a href="{% url 'proyectos:inicio' %}" class="btn btn-secondary">Volver al Inicio</a>
-
 {% endblock %}
