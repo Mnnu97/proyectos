@@ -22,11 +22,10 @@ from .views_estado import actualizar_estado_tarea, actualizar_estado_proyecto
 # 👇 Vistas de gestión de usuarios (Admin)
 from .views_usuarios import lista_usuarios, crear_usuario, eliminar_usuario, asignar_proyectos, detalle_usuario, ver_proyectos_usuario, editar_usuario
 
-# 👇 Importamos vistas adicionales
-from .views import admin_panel_view  # Vista del panel de administración
-
-# 👇 Importamos vistas de autenticación para cambio de contraseña
+# 👇 Importamos vistas de autenticación para cambio de contraseña + login personalizado
 from django.contrib.auth import views as auth_views
+
+from .views import CustomLoginView  # ← Vista personalizada del login
 
 
 app_name = 'proyectos'
@@ -42,57 +41,34 @@ urlpatterns = [
     path('proyectos/<int:pk>/editar/', ProyectoUpdateView.as_view(), name='proyecto_update'),
     path('proyectos/<int:pk>/eliminar/', ProyectoDeleteView.as_view(), name='proyecto_delete'),
 
-    # 📝 Nuevas rutas para tareas por proyecto (únicas y funcionales)
+    # 📝 Rutas para Tareas por proyecto
     path('proyectos/<int:proyecto_id>/tareas/crear/', TareaCreateView.as_view(), name='tarea_create_en_proyecto'),
-    
-    # ✅ Usa <int:pk> para vistas genéricas como DetailView, UpdateView, etc.
     path('proyectos/<int:proyecto_id>/tareas/<int:pk>/', TareaDetailView.as_view(), name='tarea_detail_en_proyecto'),
     path('proyectos/<int:proyecto_id>/tareas/<int:pk>/editar/', TareaUpdateView.as_view(), name='tarea_update_en_proyecto'),
     path('proyectos/<int:proyecto_id>/tareas/<int:pk>/eliminar/', TareaDeleteView.as_view(), name='tarea_delete_en_proyecto'),
-    
-    # ✅ Cambia <int:pk> por <int:tarea_id> si tu vista espera ese nombre
-    path('proyectos/<int:proyecto_id>/tareas/<int:tarea_id>/estado/', 
-         actualizar_estado_tarea, 
-         name='actualizar_estado_tarea_en_proyecto'),
+    path('proyectos/<int:proyecto_id>/tareas/<int:tarea_id>/estado/', actualizar_estado_tarea, name='actualizar_estado_tarea_en_proyecto'),
 
-    # ⚠️ Elimina estas rutas si no son usadas:
-    # Comentadas o eliminadas para evitar conflictos
-    # path('tareas/', TareaListView.as_view(), name='tarea_list'),  ← puede causar errores
-    # path('tareas/<int:pk>/', TareaDetailView.as_view(), name='tarea_detail'),
-    # path('tareas/crear/', TareaCreateView.as_view(), name='tarea_create'),
-    # path('tareas/<int:pk>/editar/', TareaUpdateView.as_view(), name='tarea_update'),
-    # path('tareas/<int:pk>/eliminar/', TareaDeleteView.as_view(), name='tarea_delete'),
-    # path('tareas/<int:pk>/estado/', actualizar_estado_tarea, name='actualizar_estado_tarea'),  ← esta era la que causaba el error
-
-    # 🔁 Acciones de estado de proyectos
+    # ⚠️ Acciones de estado de proyectos
     path('proyectos/<int:pk>/estado/', actualizar_estado_proyecto, name='actualizar_estado_proyecto'),
 
-    # 👤 Registro de usuario
-    path('registro/', signup, name='signup'),
+    # 👤 Registro y Login
+    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html',  redirect_authenticated_user = True), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+
 
     # 👥 Panel de gestión de usuarios (solo Admin)
     path('usuarios/', lista_usuarios, name='lista_usuarios'),
     path('usuarios/crear/', crear_usuario, name='crear_usuario'),
-    
-    # ✅ Editar usuario
     path('usuarios/<int:pk>/editar/', editar_usuario, name='editar_usuario'),
-
-    # ✅ Eliminar y Asignar Proyectos
     path('usuarios/<int:pk>/eliminar/', eliminar_usuario, name='eliminar_usuario'),
     path('usuarios/<int:pk>/asignar-proyectos/', asignar_proyectos, name='asignar_proyectos'),
     path('usuarios/<int:pk>/detalles/', detalle_usuario, name='detalle_usuario'),
-    
-    # 👀 Ver Proyectos asignados al usuario
     path('usuarios/<int:pk>/proyectos/', ver_proyectos_usuario, name='ver_proyectos_usuario'),
-
-    # 👨‍💼 Panel de Administración (solo Admin)
-    path('admin-panel/', admin_panel_view, name='admin_panel'),
 
     # 🔐 Gestión de Contraseña
     path('cambiar-password/', auth_views.PasswordChangeView.as_view(
         template_name='registration/password_change_form.html'
     ), name='password_change'),
-
     path('cambiar-password/hecho/', auth_views.PasswordChangeDoneView.as_view(
         template_name='registration/password_change_done.html'
     ), name='password_change_done'),

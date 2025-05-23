@@ -81,13 +81,11 @@
             <ul class="list-group mt-2">
                 {% for tarea in tareas %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <!-- ✅ Cambiado a 'pk' -->
                         <a href="{% url 'proyectos:tarea_detail_en_proyecto' proyecto_id=proyecto.id pk=tarea.id %}" class="text-decoration-none">
                             {{ tarea.titulo }}
                         </a>
 
                         {% if user|has_group:"Admin" %}
-                            <!-- ✅ También usado aquí -->
                             <a href="{% url 'proyectos:tarea_delete_en_proyecto' proyecto_id=proyecto.id pk=tarea.id %}" 
                                class="btn btn-sm btn-danger">
                                 Eliminar
@@ -103,9 +101,18 @@
 
     <!-- Botones de acción -->
     <div class="mt-4">
-        <a href="{{ volver_a }}" class="btn btn-outline-secondary me-2">← Volver a Proyectos</a>
-        <a href="{% url 'proyectos:proyecto_update' proyecto.id %}" class="btn btn-outline-primary me-2">Editar Proyecto</a>
-        <a href="{% url 'proyectos:proyecto_delete' proyecto.id %}" class="btn btn-outline-danger">Eliminar Proyecto</a>
+        <a href="{% url 'proyectos:inicio' %}" class="btn btn-outline-secondary me-2">
+            ← Volver al Inicio
+        </a>
+
+        {% if user|has_group:"Admin" or user in proyecto.usuarios.all %}
+            <a href="{% url 'proyectos:proyecto_update' proyecto.id %}" class="btn btn-outline-primary me-2">
+                Editar Proyecto
+            </a>
+            <a href="{% url 'proyectos:proyecto_delete' proyecto.id %}" class="btn btn-outline-danger">
+                Eliminar Proyecto
+            </a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

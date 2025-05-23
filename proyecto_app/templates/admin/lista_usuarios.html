@@ -4,17 +4,17 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Usuarios Registrados</h2>
+    <h2 class="mb-4 text-center">Usuarios Registrados</h2>
 
     <!-- Mostrar administradores -->
     <div class="mb-5">
-        <h4 class="mb-3 text-primary">Administradores</h4>
-        <table class="table table-bordered table-hover">
+        <h3 class="text-primary mb-3">Administradores</h3>
+        <table class="table table-bordered table-hover align-middle">
             <thead class="table-dark">
                 <tr>
-                    <th>Nombre de usuario</th>
-                    <th>Email</th>
-                    <th>Acciones</th>
+                    <th><i class="bi bi-person-fill"></i> Nombre de usuario</th>
+                    <th><i class="bi bi-envelope"></i> Email</th>
+                    <th><i class="bi bi-shield-check"></i> Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,7 +24,9 @@
                             <td>{{ usuario.username }}</td>
                             <td>{{ usuario.email }}</td>
                             <td>
-                                <span class="text-muted">No hay acciones disponibles</span>
+                                <span class="text-muted">
+                                    <i class="bi bi-lock"></i> No hay acciones disponibles
+                                </span>
                             </td>
                         </tr>
                     {% endif %}
@@ -39,13 +41,13 @@
 
     <!-- Mostrar usuarios comunes -->
     <div class="mb-5">
-        <h4 class="mb-3 text-success">Usuarios Comunes</h4>
-        <table class="table table-bordered table-hover">
+        <h3 class="text-success mb-3">Usuarios Comunes</h3>
+        <table class="table table-bordered table-hover align-middle">
             <thead class="table-light">
                 <tr>
-                    <th>Nombre de usuario</th>
-                    <th>Email</th>
-                    <th>Acciones</th>
+                    <th><i class="bi bi-person"></i> Nombre de usuario</th>
+                    <th><i class="bi bi-envelope-open"></i> Email</th>
+                    <th><i class="bi bi-tools"></i> Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,22 +58,32 @@
                             <td>{{ usuario.email }}</td>
                             <td>
                                 <!-- Botón Asignar Proyectos -->
-                                <a href="{% url 'proyectos:asignar_proyectos' usuario.id %}" class="btn btn-sm btn-warning me-2">
-                                    Asignar Proyectos
+                                <a href="{% url 'proyectos:asignar_proyectos' usuario.id %}" 
+                                   class="btn btn-sm btn-warning me-2" 
+                                   title="Asignar Proyectos">
+                                    <i class="bi bi-diagram-3"></i> Asignar
                                 </a>
 
                                 <!-- Botón Ver Proyectos -->
-                                <a href="{% url 'proyectos:ver_proyectos_usuario' usuario.id %}" class="btn btn-sm btn-info me-2">
-                                    Ver Proyectos
+                                <a href="{% url 'proyectos:ver_proyectos_usuario' usuario.id %}" 
+                                   class="btn btn-sm btn-info me-2" 
+                                   title="Ver Proyectos">
+                                    <i class="bi bi-eye"></i> Ver
                                 </a>
+
                                 <!-- Botón Editar -->
-                                 <a href="{% url 'proyectos:editar_usuario' usuario.id %}" class="btn btn-sm btn-warning me-2">
-                                 Editar
-                                 </a> 
+                                <a href="{% url 'proyectos:editar_usuario' usuario.id %}" 
+                                   class="btn btn-sm btn-primary me-2" 
+                                   title="Editar Usuario">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+
                                 <!-- Botón Eliminar -->
                                 <form action="{% url 'proyectos:eliminar_usuario' usuario.id %}" method="post" class="d-inline">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar Usuario">
+                                        <i class="bi bi-trash"></i> Eliminar
+                                    </button>
                                 </form>
                             </td>
                         </tr>
@@ -86,9 +98,15 @@
     </div>
 
     <!-- Botones de acción -->
-    <div class="mt-4">
-        <a href="{% url 'proyectos:crear_usuario' %}" class="btn btn-success me-2">Crear Nuevo Usuario</a>
-        <a href="{% url 'proyectos:admin_panel' %}" class="btn btn-outline-secondary">Volver al Panel</a>
+    <div class="mt-4 d-flex justify-content-between">
+        <a href="{% url 'proyectos:crear_usuario' %}" class="btn btn-success">
+            <i class="bi bi-person-plus"></i> Crear Nuevo Usuario
+        </a>
+        
+        <!-- Botón Volver al Inicio -->
+        <a href="{% url 'proyectos:inicio' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Volver al Inicio
+        </a>
     </div>
 </div>
 {% endblock %}

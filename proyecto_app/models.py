@@ -2,7 +2,8 @@
 
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import User  # Importamos User para la relación
+from django.contrib.auth.models import User
+
 
 class Proyecto(models.Model):
     """
@@ -19,14 +20,14 @@ class Proyecto(models.Model):
 
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
-    fecha_inicio = models.DateField(default=timezone.now)  
+    fecha_inicio = models.DateField(default=timezone.now)
     fecha_fin = models.DateField(blank=True, null=True)
     estado = models.CharField(
         max_length=20,
         choices=ESTADOS,
         default='pdte'
     )
-    
+
     # Campo ManyToMany para asignar usuarios al proyecto
     usuarios = models.ManyToManyField(
         User,
@@ -42,7 +43,7 @@ class Proyecto(models.Model):
         return dict(Proyecto.ESTADOS).get(self.estado, "Desconocido")
 
     def actualizar_estado(self):
-        from .models import Tarea  
+        from .models import Tarea
 
         total_tareas = self.tareas.count()
 
@@ -95,7 +96,7 @@ class Tarea(models.Model):
         choices=ESTADOS_COMPLETADO,
         default='pdte'
     )
-    
+
     fecha_creacion = models.DateField(auto_now_add=True)
     fecha_vencimiento = models.DateField(blank=True, null=True)
 
