@@ -1,5 +1,3 @@
-# proyecto_app/views_crud.py
-
 from django.views.generic import (
     ListView, DetailView,
     CreateView, UpdateView,
@@ -11,7 +9,8 @@ from .forms import ProyectoForm, TareaForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
+from django.db.models import Q
 from django.contrib import messages
 
 
@@ -20,7 +19,7 @@ from django.contrib import messages
 # ========================
 
 @method_decorator(login_required, name='dispatch')
-class ProyectoListView( ListView):
+class ProyectoListView(ListView):
     model = Proyecto
     template_name = 'proyecto_app/proyecto_list.html'
     context_object_name = 'proyectos'
@@ -31,30 +30,40 @@ class ProyectoListView( ListView):
         Filtra los proyectos según el rol del usuario:
         - Admin / Superuser → todos los proyectos
         - Usuario común → solo proyectos asignados
+        Además permite buscar por nombre, descripción, fechas o estado
         """
         user = self.request.user
+        q = self.request.GET.get('q', '').strip()
 
         if user.groups.filter(name='Admin').exists() or user.is_superuser:
-            return Proyecto.objects.all().order_by('nombre')
-        # Si no es Admin, solo proyectos donde está asignado
+            queryset = Proyecto.objects.all().order_by('nombre')
+        else:
+            queryset = Proyecto.objects.filter(usuarios=user).order_by('nombre')
 
-        # Usuario común → solo proyectos donde está asignado
-        return Proyecto.objects.filter(usuarios=user).order_by('nombre')
+        if q:
+            queryset = queryset.filter(
+                Q(nombre__icontains=q) |
+                Q(descripcion__icontains=q) |
+                Q(fecha_inicio__icontains=q) |
+                Q(fecha_fin__icontains=q) |
+                Q(estado__icontains=q)
+            ).distinct()
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         user = self.request.user
+
         # Solo Admin ve proyectos agrupados por estado
         if user.groups.filter(name='Admin').exists() or user.is_superuser:
             context['proyectos_pendientes'] = Proyecto.objects.filter(estado='pdte').order_by('nombre')
             context['proyectos_en_progreso'] = Proyecto.objects.filter(estado='en_progreso').order_by('nombre')
             context['proyectos_completados'] = Proyecto.objects.filter(estado='completado').order_by('nombre')
         else:
-            # ✅ Proyectos asignados al usuario actual
-            context['proyectos_pendientes'] = Proyecto.objects.filter(usuarios=user, estado='pdte').order_by('nombre')
-            context['proyectos_en_progreso'] = Proyecto.objects.filter(usuarios=user, estado='en_progreso').order_by('nombre')
-            context['proyectos_completados'] = Proyecto.objects.filter(usuarios=user, estado='completado').order_by('nombre')
+            context['proyectos_pendientes'] = Proyecto.objects.filter(usuarios=self.request.user, estado='pdte').order_by('nombre')
+            context['proyectos_en_progreso'] = Proyecto.objects.filter(usuarios=self.request.user, estado='en_progreso').order_by('nombre')
+            context['proyectos_completados'] = Proyecto.objects.filter(usuarios=self.request.user, estado='completado').order_by('nombre')
 
         return context
 
@@ -127,7 +136,7 @@ class ProyectoDeleteView(DeleteView):
 
 
 # ====================
-# 📝 VISTAS DE TAREAS (CORREGIDA AQUÍ 👇)
+# 📝 VISTAS DE TAREAS
 # ====================
 
 @method_decorator(login_required, name='dispatch')
@@ -147,7 +156,6 @@ class TareaListView(ListView):
         if user.groups.filter(name='Admin').exists() or user.is_superuser:
             return Tarea.objects.select_related('proyecto').all().order_by('titulo')
 
-        # Usuario común → solo tareas de proyectos asignados
         return Tarea.objects.select_related('proyecto').filter(proyecto__usuarios=user).order_by('titulo')
 
 
@@ -162,7 +170,6 @@ class TareaDetailView(DetailView):
         Restringimos edición solo a tareas de proyectos asignados al usuario
         """
         user = self.request.user
-
         qs = super().get_queryset()
 
         if user.groups.filter(name='Admin').exists() or user.is_superuser:

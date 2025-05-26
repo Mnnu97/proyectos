@@ -72,11 +72,14 @@ WSGI_APPLICATION = 'proyectos.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'nombre_de_tu_base_de_datos',
+        'NAME': 'nombre_de_tu_base_de_datos',  
         'USER': 'usuario_postgresql',
-        'PASSWORD': '27127341m',
+        'PASSWORD': '27127341m',  
         'HOST': 'localhost',
         'PORT': '5432',
+        'TEST': {
+            'NAME': 'proyecto_app_test',  
+        }
     }
 }
 
@@ -106,7 +109,14 @@ USE_TZ = True
 
 
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "proyecto_app" / "static"
+]
+
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

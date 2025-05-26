@@ -1,5 +1,3 @@
-# proyecto_app/models.py
-
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -27,8 +25,6 @@ class Proyecto(models.Model):
         choices=ESTADOS,
         default='pdte'
     )
-
-    # Campo ManyToMany para asignar usuarios al proyecto
     usuarios = models.ManyToManyField(
         User,
         related_name='proyectos_usuario',

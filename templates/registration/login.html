@@ -3,57 +3,109 @@
 {% block title %}Iniciar Sesión{% endblock %}
 
 {% block content %}
-<!-- Estilo adicional (opcional si no lo tienes en un CSS externo) -->
 <style>
-    .form-control {
-        display: inline-block;
-        width: auto !important;
-        max-width: 100%;
-        text-align: center;
+    /* Fondo personalizado */
+    .fondo-login {
+        background-image: url("{% static 'proyecto_app/images/fondo_inicio.png' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    label {
-        display: block;
-        width: 100%;
-        text-align: center;
-        font-weight: 500;
-        margin-bottom: 8px;
-    }
-
-    .mb-3.text-center {
-        text-align: center;
+    /* Overlay opcional para mejorar legibilidad */
+    .formulario-login {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
 </style>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white text-center">
-                    <h4>🔐 Iniciar Sesión</h4>
-                </div>
-                <div class="card-body">
-                    {% if form.errors %}
-                        <div class="alert alert-danger text-center">
-                            <strong>Usuario o contraseña incorrectos.</strong>
-                        </div>
-                    {% endif %}
+<div style="
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-image: url('{% static 'proyecto_app/images/fondo_inicio.png' %}');
+    background-size: cover;
+    background-position: center;
+">
+    <div class="formulario-login" style="
+        width: 100%;
+        max-width: 400px;
+        padding: 2rem;
+        background-color: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    ">
+        <h2 class="text-center mb-4">🔐 Iniciar Sesión</h2>
 
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="mb-3 text-center">
-                            <label for="id_username" class="form-label">Nombre de usuario</label>
-                            {{ form.username }}
-                        </div>
-                        <div class="mb-3 text-center">
-                            <label for="id_password" class="form-label">Contraseña</label>
-                            {{ form.password }}
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Entrar</button>
-                    </form>
+        {% if form.errors %}
+            <div class="alert alert-danger text-center mb-3" role="alert">
+                Usuario o contraseña incorrectos.
+            </div>
+        {% endif %}
+
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+
+            <!-- Campo Nombre de usuario -->
+            <div class="mb-3 text-center">
+                <label for="id_username" class="form-label d-block mb-1"><strong>Nombre de usuario</strong></label>
+                <input type="text"
+                       name="username"
+                       id="id_username"
+                       value="{{ form.username.value|default_if_none:'' }}"
+                       class="form-control shadow-none rounded-pill px-4 py-2 mx-auto d-inline-block w-100"
+                       placeholder="Usuario"
+                       required
+                       style="max-width: 300px; display: inline-block !important;">
+                <div class="invalid-feedback d-block mt-2 text-center">
+                   
                 </div>
             </div>
-        </div>
+
+            <!-- Campo Contraseña -->
+            <div class="mb-3 text-center">
+                <label for="id_password" class="form-label d-block mb-1"><strong>Contraseña</strong></label>
+                <input type="password"
+                       name="password"
+                       id="id_password"
+                       class="form-control shadow-none rounded-pill px-4 py-2 mx-auto d-inline-block w-100"
+                       placeholder="Contraseña"
+                       required
+                       style="max-width: 300px; display: inline-block !important;">
+                <div class="invalid-feedback d-block mt-2 text-center">
+                    
+                </div>
+            </div>
+
+            <!-- Botón Entrar -->
+            <div class="d-grid mt-3">
+                <button type="submit" class="btn btn-primary">Entrar</button>
+            </div>
+        </form>
     </div>
 </div>
+
+<!-- Validación del formulario -->
+<script>
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
 {% endblock %}
