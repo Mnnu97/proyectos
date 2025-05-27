@@ -14,17 +14,15 @@ from pathlib import Path
 from django.urls import reverse_lazy
 import os
 
+# Build paths inside the project like: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+# Quick-start development settings - unsuitable for production
 SECRET_KEY = 'django-insecure-8j8k@+v9)kppsxf-s)=5hye!d8e7%br$_mv_gbxe_iyb$a$2u^'
-
-
 DEBUG = True
-
 ALLOWED_HOSTS = []
 
-
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -68,7 +66,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'proyectos.wsgi.application'
 
 
-
+# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -84,6 +82,7 @@ DATABASES = {
 }
 
 
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -100,27 +99,40 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-
-
+# Internationalization
 LANGUAGE_CODE = 'es-es'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
 
-
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-
 STATICFILES_DIRS = [
     BASE_DIR / "proyecto_app" / "static"
 ]
-
-
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+
+# Sesión y cookies – Aquí se agregó lo que necesitas
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # ✅ Cierra sesión al cerrar navegador
+SESSION_COOKIE_AGE = 1209600  # 20 minutos (opcional)
+SESSION_SAVE_EVERY_REQUEST = False  # No guardar sesión si no hay cambios
+CSRF_COOKIE_SECURE = False  # Usa True en producción con HTTPS
+X_FRAME_OPTIONS = 'DENY'  # Protección contra clickjacking
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Seguridad adicional
+SECURE_HSTS_SECONDS = 0  # HSTS desactivado por ahora (activar en producción)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False  # Solo en producción
+SECURE_SSL_REDIRECT = False  # Cambiar a True en producción con HTTPS
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'  # Puedes usar 'Strict' o 'Lax' según necesites
+SECURE_REFERRER_POLICY = 'same-origin'
+
+
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+# Redirect URLs
 LOGIN_REDIRECT_URL = reverse_lazy('proyectos:inicio')
-
-
 LOGOUT_REDIRECT_URL = reverse_lazy('login')
