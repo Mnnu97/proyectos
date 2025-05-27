@@ -1,11 +1,16 @@
 {% extends "base.html" %}
+{% load group_filters %}
 {% block title %}Tareas Agrupadas por Proyecto{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Tareas por Proyecto</h2>
-        <a href="{% url 'proyectos:tarea_create' %}" class="btn btn-success">Crear Nueva Tarea</a>
+
+        <!-- Botón Crear Tarea (solo visible para Admin) -->
+        {% if user|has_group:"Admin" %}
+            <a href="{% url 'proyectos:tarea_create' %}" class="btn btn-success">Crear Nueva Tarea</a>
+        {% endif %}
     </div>
 
     <!-- Botón: Volver a Proyectos -->
@@ -49,6 +54,7 @@
 
         <!-- Paginación -->
         {% include "proyecto_app/pagination.html" %}
+
     {% else %}
         <div class="alert alert-info mt-3">No hay tareas registradas aún.</div>
     {% endif %}

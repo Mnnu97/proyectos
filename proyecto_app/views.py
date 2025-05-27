@@ -2,6 +2,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
 
 from .models import Proyecto, Tarea
 
@@ -107,3 +109,16 @@ def crear_usuario(request):
             messages.error(request, 'Por favor, completa ambos campos.')
 
     return render(request, 'admin/crear_usuario.html')
+
+
+# =============================
+# ✅ Vista personalizada del login
+# =============================
+class CustomLoginView(LoginView):
+    template_name = 'login.html'  # ← Cambia esto si usas otro nombre como 'accounts/login.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        # Si el usuario ya está logueado, lo redirigimos
+        if request.user.is_authenticated:
+            return redirect('proyectos:inicio')  
+        return super().dispatch(request, *args, **kwargs)

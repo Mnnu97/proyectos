@@ -1,5 +1,6 @@
-{% extends "base.html" %}
+<!-- templates/proyecto_app/tarea_confirm_delete.html -->
 
+{% extends "base.html" %}
 {% block title %}Eliminar Tarea - Confirmación{% endblock %}
 
 {% block content %}
@@ -9,10 +10,13 @@
 
     <form method="post" class="mt-3">
         {% csrf_token %}
+        
         <button type="submit" class="btn btn-danger me-2">Sí, eliminar</button>
         
-        <!-- Botón cancelar → SIEMPRE lleva a proyecto_list -->
-        <a href="{% url 'proyectos:proyecto_list' %}" class="btn btn-outline-secondary">Cancelar</a>
-    </div>
+        <!-- Botón cancelar → AHORA usa 'inicio' o 'proyecto_detail' -->
+        <a href="{% url 'proyectos:proyecto_detail' pk=tarea.proyecto.pk %}" class="btn btn-outline-secondary">
+            Cancelar
+        </a>
+    </form>
 </div>
 {% endblock %}

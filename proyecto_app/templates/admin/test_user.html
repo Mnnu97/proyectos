@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Test de Usuario{% endblock %}
+
+{% block content %}
+<h2>Usuario Actual</h2>
+<ul>
+    <li><strong>Nombre:</strong> {{ request.user.username }}</li>
+    <li><strong>Email:</strong> {{ request.user.email }}</li>
+    <li><strong>Es superusuario:</strong> {{ request.user.is_superuser }}</li>
+    <li><strong>Pertenece al grupo Admin:</strong>
+        {% if request.user.groups.filter(name='Admin').exists %}
+            ✅ Sí
+        {% else %}
+            ❌ No
+        {% endif %}
+    </li>
+</ul>
+
+<a href="{% url 'proyectos:admin_panel' %}" class="btn btn-primary">Ir al Panel de Admin</a>
+{% endblock %}
