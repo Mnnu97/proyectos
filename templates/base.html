@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,7 +12,17 @@
     
 
     <style>
-        body {
+        body 
+    .fondo-proyecto {
+        background-image: url("{% static 'proyecto_app/images/plano.png' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        min-height: 100vh;
+       
+    }
+        
+        {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -105,7 +116,7 @@
     </style>
 </head>
 <body>
-
+<div class="fondo-proyecto">
     <!-- Solo se muestra si el usuario está autenticado -->
     {% if user.is_authenticated %}
 
@@ -161,7 +172,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background-color:rgb(34, 34, 34);
+            background-color:rgb(3, 7, 10);
             color: white;
             text-align: center;
             padding: 10px 0;
@@ -208,6 +219,6 @@
 
 <!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+</div>
 </body>
 </html>

@@ -2,22 +2,63 @@
 {% block title %}Asignar Proyectos - {{ usuario.username }}{% endblock %}
 
 {% block content %}
-<h1>Asignar Proyectos a {{ usuario.username }}</h1>
+<div class="container mt-5">
+    <h2>🧾 Asignar Proyectos a <strong>{{ usuario.username }}</strong></h2>
+    <p class="text-muted">Correo: {{ usuario.email|default:"Sin correo" }}</p>
 
-<form method="post">
-  {% csrf_token %}
-  <div class="mb-3">
-    <label for="proyectos" class="form-label">Selecciona los proyectos</label>
-    <select multiple class="form-control" id="proyectos" name="proyectos">
-      {% for proyecto in proyectos %}
-        <option value="{{ proyecto.id }}" {% if proyecto in proyectos_usuario %}selected{% endif %}>
-          {{ proyecto.nombre }}
-        </option>
-      {% endfor %}
-    </select>
-  </div>
-  <button type="submit" class="btn btn-primary">Guardar Asignaciones</button>
-  <a href="{% url 'proyectos:lista_usuarios' %}" class="btn btn-secondary">Cancelar</a>
-</form>
+    <!-- Mostrar advertencia si es Admin -->
+    {% for grupo in usuario.groups.all %}
+        {% if grupo.name == 'Admin' %}
+            <div class="alert alert-warning d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span>Este usuario es administrador. No se recomienda asignar proyectos manualmente.</span>
+            </div>
+        {% endif %}
+    {% endfor %}
 
+    <!-- Formulario de asignación -->
+    <form method="post" class="mt-4 needs-validation" novalidate>
+        {% csrf_token %}
+        
+        <!-- Campo de selección múltiple -->
+        <div class="mb-3">
+            <label for="proyectos" class="form-label">Selecciona uno o varios proyectos:</label>
+            <select multiple class="form-select" id="proyectos" name="proyectos" required>
+                {% for proyecto in proyectos %}
+                    <option value="{{ proyecto.id }}" {% if proyecto in proyectos_usuario %}selected{% endif %}>
+                        {{ proyecto.nombre }} | Estado: {{ proyecto.get_estado_display }}
+                    </option>
+                {% endfor %}
+            </select>
+            <small class="form-text text-muted">Puedes seleccionar varias opciones manteniendo presionada la tecla Ctrl (Windows) o Command (Mac).</small>
+        </div>
+
+        <!-- Botones -->
+        <div class="mt-4 d-grid gap-2 d-md-block">
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-check2-circle me-1"></i> Guardar Asignaciones
+            </button>
+            <a href="{% url 'proyectos:lista_usuarios' %}" class="btn btn-outline-secondary ms-2">
+                ← Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Validación Bootstrap -->
+<script>
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
 {% endblock %}
