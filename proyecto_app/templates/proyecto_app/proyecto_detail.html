@@ -117,13 +117,15 @@
                     ← Volver al Inicio
                 </a>
 
-                {% if user|has_group:"Admin" or user in proyecto.usuarios.all %}
+                {% if user|has_group:"Admin" or user.is_superuser %}
                     <a href="{% url 'proyectos:proyecto_update' proyecto.id %}" class="btn btn-outline-primary me-2">
                         Editar Proyecto
                     </a>
+                    {% if user|has_group:"Admin" or user.is_superuser %}
                     <a href="{% url 'proyectos:proyecto_delete' proyecto.id %}" class="btn btn-outline-danger">
                         Eliminar Proyecto
                     </a>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

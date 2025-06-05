@@ -273,10 +273,10 @@ class TareaDeleteView(DeleteView):
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
 
-        if not self.request.user.groups.filter(name='Admin').exists():
-            raise PermissionDenied("Solo los administradores pueden eliminar tareas.")
-
-        return obj
+        if self.request.user == obj.usuario or self.request.user.groups.filter(name='Admin').exists() or self.request.user.is_superuser:
+            return obj
+        else:
+            raise PermissionDenied("No tienes permiso para eliminar esta tarea.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
