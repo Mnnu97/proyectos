@@ -13,10 +13,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Q
 from django.contrib import messages
 
-
-# ========================
 # 📁 VISTAS DE PROYECTOS
-# ========================
+
 
 @method_decorator(login_required, name='dispatch')
 class ProyectoListView(ListView):
@@ -134,10 +132,7 @@ class ProyectoDeleteView(DeleteView):
     template_name = 'proyecto_app/proyecto_confirm_delete.html'
     success_url = reverse_lazy('proyectos:inicio')
 
-
-# ====================
-# 📝 VISTAS DE TAREAS
-# ====================
+# VISTAS DE TAREAS
 
 @method_decorator(login_required, name='dispatch')
 class TareaListView(ListView):
@@ -198,17 +193,34 @@ class TareaCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        # Obtenemos el proyecto_id desde kwargs o POST/GET
         proyecto_id = self.kwargs.get('proyecto_id') or self.request.GET.get('proyecto') or self.request.POST.get('proyecto')
 
         if proyecto_id:
             try:
-                context['proyecto'] = Proyecto.objects.get(pk=int(proyecto_id))
+                proyecto = Proyecto.objects.get(pk=int(proyecto_id))
+                
+                user = self.request.user
+                if not (user.groups.filter(name='Admin').exists() or user.is_superuser or proyecto.usuarios.filter(pk=user.pk).exists()):
+                    raise PermissionDenied("No tienes acceso a este proyecto.")
+
+                context['proyecto'] = proyecto
             except (ValueError, Proyecto.DoesNotExist):
                 context['proyecto'] = None
         else:
             context['proyecto'] = None
 
         return context
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        user = self.request.user
+
+        # Si el usuario NO es Admin, filtramos los proyectos disponibles
+        if not user.groups.filter(name='Admin').exists() and not user.is_superuser:
+            form.fields['proyecto'].queryset = Proyecto.objects.filter(usuarios=user).order_by('nombre')
+
+        return form
 
     def form_valid(self, form):
         proyecto_id = self.kwargs.get('proyecto_id') or self.request.POST.get('proyecto', None)
@@ -217,8 +229,15 @@ class TareaCreateView(CreateView):
             raise PermissionDenied("No se ha especificado un proyecto.")
 
         proyecto = get_object_or_404(Proyecto, pk=proyecto_id)
+
+        # Verificar que el usuario tenga acceso al proyecto
+        user = self.request.user
+        if not (user.groups.filter(name='Admin').exists() or user.is_superuser or proyecto.usuarios.filter(pk=user.pk).exists()):
+            raise PermissionDenied("No tienes acceso a este proyecto.")
+
+        # Asignar proyecto y usuario
         form.instance.proyecto = proyecto
-        form.instance.usuario = self.request.user
+        form.instance.usuario = user
 
         return super().form_valid(form)
 
@@ -227,7 +246,6 @@ class TareaCreateView(CreateView):
         if proyecto_id:
             return reverse('proyectos:proyecto_detail', kwargs={'pk': int(proyecto_id)})
         return reverse_lazy('proyectos:inicio')
-
 
 @method_decorator(login_required, name='dispatch')
 class TareaUpdateView(UpdateView):
@@ -272,8 +290,13 @@ class TareaDeleteView(DeleteView):
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
+        user = self.request.user
 
-        if self.request.user == obj.usuario or self.request.user.groups.filter(name='Admin').exists() or self.request.user.is_superuser:
+        # ✅ Permite eliminar si:
+        # - Es el creador de la tarea
+        # - O es Admin
+        # - O es Superuser
+        if user == obj.usuario or user.groups.filter(name='Admin').exists() or user.is_superuser:
             return obj
         else:
             raise PermissionDenied("No tienes permiso para eliminar esta tarea.")
@@ -281,7 +304,7 @@ class TareaDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         tarea = self.get_object()
-
+        
         if tarea.proyecto:
             context['volver_a'] = reverse('proyectos:proyecto_detail', kwargs={'pk': tarea.proyecto.pk})
         else:

@@ -98,7 +98,6 @@
 
     <!-- Acciones principales -->
     <div class="mt-4">
-        <a href="{{ volver_a }}" class="btn btn-outline-secondary btn-sm me-2">← Volver a Proyectos</a>
         <a href="{% url 'proyectos:tarea_update_en_proyecto' proyecto_id=tarea.proyecto.id pk=tarea.id %}" class="btn btn-outline-primary btn-sm me-2">Editar</a>
         <a href="{% url 'proyectos:tarea_delete_en_proyecto' proyecto_id=tarea.proyecto.id pk=tarea.id %}" class="btn btn-outline-danger btn-sm">Eliminar</a>
     </div>

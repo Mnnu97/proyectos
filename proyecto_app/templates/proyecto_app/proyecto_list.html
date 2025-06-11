@@ -21,7 +21,7 @@
     }
 </style>
 
-<!-- Campo de búsqueda + Botón Exportar -->
+<!-- Campo de búsqueda + Botones Exportar / Importar -->
 <div class="container mt-4 mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
     <form method="get" class="d-flex gap-2 align-items-center w-100">
         <input type="text" name="q" value="{{ request.GET.q }}" class="form-control w-50" placeholder="Buscar proyecto...">
@@ -33,11 +33,14 @@
         {% endif %}
     </form>
 
-    <!-- Botón Exportar a Excel -->
-    {% if user|has_group:"Admin" %}
-        <div class="mt-2 w-100 w-md-auto text-md-end">
+    <!-- Botones Exportar e Importar (solo visibles para Admin) -->
+    {% if user|has_group:"Admin" or user.is_superuser %}
+        <div class="mt-2 w-100 w-md-auto text-md-end d-flex gap-2 flex-wrap justify-content-end">
             <a href="{% url 'proyectos:exportar_proyectos' %}" class="btn btn-success d-inline-flex align-items-center gap-2">
                 <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
+            </a>
+            <a href="{% url 'proyectos:importar_proyectos' %}" class="btn btn-info d-inline-flex align-items-center gap-2 text-white">
+                <i class="bi bi-file-earmark-arrow-up"></i> Importar desde Excel
             </a>
         </div>
     {% endif %}

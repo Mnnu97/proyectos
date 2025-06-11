@@ -1,0 +1,30 @@
+<!-- templates/admin/importar_datos.html -->
+
+{% extends "base.html" %}
+{% block title %}Importar Proyectos - Panel de Administración{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>📥 Importar Proyectos</h2>
+    <p class="text-muted">Sube un archivo Excel (.xlsx) con las columnas:</p>
+
+    <ul>
+        <li><code>nombre</code></li>
+        <li><code>descripcion</code> (opcional)</li>
+        <li><code>fecha_inicio</code> (YYYY-MM-DD)</li>
+        <li><code>fecha_fin</code> (YYYY-MM-DD, opcional)</li>
+        <li><code>estado</code> (pdte / en_progreso / completado)</li>
+    </ul>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="archivo" class="form-label">Selecciona un archivo Excel (.xlsx)</label>
+            <input type="file" name="archivo" id="archivo" class="form-control" accept=".xlsx" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Importar Datos</button>
+        <a href="{% url 'proyectos:inicio' %}" class="btn btn-outline-secondary ms-2">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
