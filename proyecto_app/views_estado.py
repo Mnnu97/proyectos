@@ -14,7 +14,7 @@ def actualizar_estado_tarea(request, proyecto_id, tarea_id):
     user = request.user
     tarea = get_object_or_404(Tarea, id=tarea_id)
 
-    # Validar que la tarea pertenezca al proyecto especificado
+   
     if tarea.proyecto.id != proyecto_id:
         messages.error(request, "La tarea no pertenece al proyecto especificado.")
         return redirect('proyectos:tarea_detail_en_proyecto', proyecto_id=tarea.proyecto.id, pk=tarea.id)
